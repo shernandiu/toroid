@@ -8,15 +8,15 @@ const size_t HEIGHT = 80;
 const float STEP = 0.01;
 const float R = 2;
 const float r = 1;
-const float X_AXIS_ROTATION_SPEED = 0.06;
-const float Y_AXIS_ROTATION_SPEED = 0.03;
+const float X_AXIS_ROTATION_SPEED = 0.01;
+const float Y_AXIS_ROTATION_SPEED = 0.00;
 const float SCREEN_DIST = 50;
 const char* SHADES = ".,-~:;=!*#$@";
 const float DISTANCE = 5;
 
 int main() {
     const int NUMBER_SHADES = strlen(SHADES);
-    const float LIGHT_VECTOR[] = { 0, 1 / sqrt(2), -1 / sqrt(2) };
+    const float LIGHT_VECTOR[] = { 0, 0, -1 };
 
 
     float betta, alpha;
@@ -59,7 +59,7 @@ int main() {
                 // APPLY LIGHT
                 // norms
                 normX = cos(alpha) * cos(betta);
-                normY = 0;
+                normY = sin(alpha) * sin(betta);
                 normZ = sin(alpha);
 
                 // ROTATION X
@@ -69,11 +69,11 @@ int main() {
 
                 // ROTATION Y
                 normX = nz * cos(yRotationAngle) + nz * sin(yRotationAngle);
-                normY = ny;
-                normZ = -nx * sin(yRotationAngle) + nz * cos(yRotationAngle);
+                normY = normY;
+                normZ = normX * sin(yRotationAngle) + normZ * cos(yRotationAngle);
 
 
-                light = normX * LIGHT_VECTOR[0] + normY * LIGHT_VECTOR[1] + normZ * LIGHT_VECTOR[2];
+                light = normZ < 0 ? normX * LIGHT_VECTOR[0] + normY * LIGHT_VECTOR[1] + normZ * LIGHT_VECTOR[2] : 0;
                 // printf("%d\n", light);
                 // ADD TO Z BUFFER
                 projected_x = x * SCREEN_DIST / (z + DISTANCE) + WIDTH / 2;
