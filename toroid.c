@@ -54,7 +54,7 @@ int main() {
 
                 // APPLY LIGHT
                 // norms
-                normX = cos(alpha);
+                normX = cos(alpha) * cos(betta) - sin(alpha) * cos(betta);
                 normY = 0;
                 normZ = sin(alpha);
 
