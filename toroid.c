@@ -9,13 +9,37 @@ const float STEP = 0.01;
 const float R = 2;
 const float r = 1;
 const float X_AXIS_ROTATION_SPEED = 0.00;
-const float Y_AXIS_ROTATION_SPEED = 0.00;
+const float Y_AXIS_ROTATION_SPEED = 0.005;
 const float SCREEN_DIST = 50;
 const char* SHADES = ".,-~:;=!*#$@";
 const float DISTANCE = 5;
 
+void rotation_x(float* x, float* y, float* z, float angle);
+void rotation_y(float* x, float* y, float* z, float angle);
+void rotation_z(float* x, float* y, float* z, float angle);
+
+void rotation_x(float* x, float* y, float* z, float angle) {
+    float tempY = *y;
+
+    *y = *y * cos(angle) - *z * sin(angle);
+    *z = tempY * sin(angle) - *z * cos(angle);
+}
+void rotation_y(float* x, float* y, float* z, float angle) {
+    float tempX = *x;
+
+    *x = *x * cos(angle) + *z * sin(angle);
+    *z = -tempX * sin(angle) + *z * cos(angle);
+}
+void rotation_z(float* x, float* y, float* z, float angle) {
+    float tempX = *x;
+
+    *x = *x * cos(angle) - *y * sin(angle);
+    *y = tempX * sin(angle) + *y * cos(angle);
+}
+
+
 int main() {
-    const int NUMBER_SHADES = strlen(SHADES) - 1;
+    const int NUMBER_SHADES = strlen(SHADES);
     const float LIGHT_VECTOR[] = { 0, 0, -1 };
 
 
@@ -45,40 +69,33 @@ int main() {
                 z = r * sin(alpha);
 
                 // ROTATION X
-                nx = x;
-                ny = y * cos(xRotationAngle) - z * sin(xRotationAngle);
-                nz = y * sin(xRotationAngle) + z * cos(xRotationAngle);
+                rotation_x(&x, &y, &z, xRotationAngle);
 
                 // ROTATION Y
-                x = nx * cos(yRotationAngle) - nz * sin(yRotationAngle);
-                y = ny;
-                z = nx * sin(yRotationAngle) + nz * cos(yRotationAngle);
+                rotation_y(&x, &y, &z, yRotationAngle);
 
                 // TRANSLATION
                 z += DISTANCE;
 
                 // APPLY LIGHT
                 // norms
-                normX = cos(alpha) * cos(betta);
-                normY = sin(alpha) * sin(betta);
+                normX = cos(alpha);
+                normY = 0;
                 normZ = sin(alpha);
+                rotation_z(&normX, &normY, &normZ, betta);
 
                 // ROTATION X
-                nx = normX;
-                ny = normY * cos(xRotationAngle) - normZ * sin(xRotationAngle);
-                nz = normY * sin(xRotationAngle) + normZ * cos(xRotationAngle);
+                rotation_x(&normX, &normY, &normZ, xRotationAngle);
 
                 // ROTATION Y
-                normX = nz * cos(yRotationAngle) + nz * sin(yRotationAngle);
-                normY = normY;
-                normZ = normX * sin(yRotationAngle) + normZ * cos(yRotationAngle);
+                rotation_y(&normX, &normY, &normZ, yRotationAngle);
 
 
                 light = normZ < 0 ? normX * LIGHT_VECTOR[0] + normY * LIGHT_VECTOR[1] + normZ * LIGHT_VECTOR[2] : 0;
                 // printf("%d\n", light);
                 // ADD TO Z BUFFER
-                projected_x = x * SCREEN_DIST / (z)+WIDTH / 2;
-                projected_y = y * SCREEN_DIST / (z)+HEIGHT / 2;
+                projected_x = x * SCREEN_DIST / z + WIDTH / 2;
+                projected_y = y * SCREEN_DIST / z + HEIGHT / 2;
                 if (projected_x >= 0 && projected_x < WIDTH && projected_y >= 0 && projected_y < HEIGHT)
                     zBuffer[(int)projected_y][(int)projected_x] = light >= 0 ? light : 0;
 
