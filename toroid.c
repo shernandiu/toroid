@@ -86,8 +86,6 @@ int main() {
                         x = alpha;
                         y = betta;
                         z = gamma;
-                        rotation_z(&x, &y, &z, betta);
-
                         // ROTATION X
                         rotation_x(&x, &y, &z, xRotationAngle);
 
@@ -112,7 +110,6 @@ int main() {
                                 normX = cos(alpha);
                                 normY = 0;
                                 normZ = sin(alpha);
-                                rotation_z(&normX, &normY, &normZ, betta);
 
                                 // ROTATION X
                                 rotation_x(&normX, &normY, &normZ, xRotationAngle);
