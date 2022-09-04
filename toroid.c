@@ -71,7 +71,7 @@ int main() {
     while (1) {
 
         memset(zBuffer, 0, (HEIGHT * WIDTH) * sizeof(float));
-        memset(screen, 0, (HEIGHT * WIDTH) * sizeof(float));
+        memset(screen, -1, (HEIGHT * WIDTH) * sizeof(float));
 
         for (betta = 0; betta < 2 * M_PI; betta += STEP) {
             for (alpha = 0; alpha < 2 * M_PI; alpha += STEP) {
@@ -98,6 +98,9 @@ int main() {
 
                 if (z > 0 && projected_x >= 0 && projected_x < WIDTH && projected_y >= 0 && projected_y < HEIGHT) {
                     if (zBuffer[(int)projected_y][(int)projected_x] == 0 || z < zBuffer[(int)projected_y][(int)projected_x]) {
+                        zBuffer[(int)projected_y][(int)projected_x] = z;
+
+
                         // APPLY LIGHT
                         normX = cos(alpha);
                         normY = 0;
@@ -110,10 +113,10 @@ int main() {
                         // ROTATION Y
                         rotation_y(&normX, &normY, &normZ, yRotationAngle);
 
-
-                        light = normZ < 0 ? normX * LIGHT_VECTOR[0] + normY * LIGHT_VECTOR[1] + normZ * LIGHT_VECTOR[2] : 0;
-                        zBuffer[(int)projected_y][(int)projected_x] = z;
-                        screen[(int)projected_y][(int)projected_x] = light;
+                        if (normZ < 0) {
+                            light = normX * LIGHT_VECTOR[0] + normY * LIGHT_VECTOR[1] + normZ * LIGHT_VECTOR[2];
+                            screen[(int)projected_y][(int)projected_x] = light > 0 ? light : 0;
+                        }
                     }
                 }
 
@@ -130,7 +133,7 @@ int main() {
         for (size_t i = 0; i < HEIGHT; i++) {
             for (size_t j = 0; j < WIDTH; j++) {
                 light = screen[i][j];
-                putchar(light > 0 ? SHADES[(int)roundf((NUMBER_SHADES - 1) * light)] : ' ');
+                putchar(light >= 0 ? SHADES[(int)roundf((NUMBER_SHADES - 1) * light)] : ' ');
             }
             putchar('\n');
         }
