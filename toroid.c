@@ -97,7 +97,8 @@ int main() {
                 projected_x = x * SCREEN_DIST / z + WIDTH / 2;
                 projected_y = y * SCREEN_DIST / z + HEIGHT / 2;
                 if (projected_x >= 0 && projected_x < WIDTH && projected_y >= 0 && projected_y < HEIGHT)
-                    zBuffer[(int)projected_y][(int)projected_x] = light >= 0 ? light : 0;
+                    if (zBuffer[(int)projected_y][(int)projected_x] < light)
+                        zBuffer[(int)projected_y][(int)projected_x] = light;
 
             }
         }
