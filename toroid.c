@@ -8,8 +8,8 @@ const size_t HEIGHT = 80;
 const float STEP = 0.01;
 const float R = 2;
 const float r = 1;
-const float X_AXIS_ROTATION_SPEED = 0.000;
-const float Y_AXIS_ROTATION_SPEED = 0.005;
+const float X_AXIS_ROTATION_SPEED = 0.005;
+const float Y_AXIS_ROTATION_SPEED = 0.000;
 const float SCREEN_DIST = 50;
 const char* SHADES = ".,-~:;=!*#$@";
 const float DISTANCE = 5;
@@ -22,7 +22,7 @@ void rotation_x(float* x, float* y, float* z, float angle) {
     float tempY = *y;
 
     *y = *y * cos(angle) - *z * sin(angle);
-    *z = tempY * sin(angle) - *z * cos(angle);
+    *z = tempY * sin(angle) + *z * cos(angle);
 }
 void rotation_y(float* x, float* y, float* z, float angle) {
     float tempX = *x;
