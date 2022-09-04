@@ -11,7 +11,7 @@ const float r = 1;
 const float X_AXIS_ROTATION_SPEED = 0.04;
 const float Y_AXIS_ROTATION_SPEED = 0.025;
 const float DISTANCE = 15;
-const char* SHADES = ".,-~:;=!*#$@";
+const char* SHADES = ".:,!;-~*=#$@";
 const float FOV = 90;
 
 // text scale = 156*288
