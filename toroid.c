@@ -60,7 +60,7 @@ int main() {
 
                 // ROTATION X
                 normY = normY * cos(xRotationAngle) - normZ * sin(xRotationAngle);
-                normY = normY * sin(xRotationAngle) - normZ * cos(xRotationAngle);
+                normZ = normY * sin(xRotationAngle) - normZ * cos(xRotationAngle);
 
                 // ROTATION Y
                 normX = normX * cos(yRotationAngle) - normY * sin(yRotationAngle);
@@ -68,7 +68,7 @@ int main() {
 
 
                 light = normX * LIGHT_VECTOR[0] + normY * LIGHT_VECTOR[1] + normZ * LIGHT_VECTOR[2];
-                printf("%d\n", light);
+                // printf("%d\n", light);
                 // ADD TO Z BUFFER
                 projected_x = x * SCREEN_DIST / z;
                 projected_y = y * SCREEN_DIST / z;
