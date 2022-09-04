@@ -40,7 +40,7 @@ void rotation_z(float* x, float* y, float* z, float angle) {
 
 int main() {
     const int NUMBER_SHADES = strlen(SHADES);
-    const float LIGHT_VECTOR[] = { 0, 1 / sqrt(2), -1 / sqrt(2) };
+    const float LIGHT_VECTOR[] = { 0, -1 / sqrt(2), -1 / sqrt(2) };
 
 
     float betta, alpha;
