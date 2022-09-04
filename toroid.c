@@ -7,7 +7,6 @@ const size_t WIDTH = 180;
 const size_t HEIGHT = 80;
 const float STEP = 0.01;
 const float R = 2;
-const float r = 1;
 const float X_AXIS_ROTATION_SPEED = 0.04;
 const float Y_AXIS_ROTATION_SPEED = 0.025;
 const float DISTANCE = 15;
@@ -61,7 +60,7 @@ int main() {
     const float SCREEN_DIST = WIDTH / tan(FOV * M_PI / 180 / 2);
 
 
-    float betta, alpha;
+    float alpha, betta, gamma;
     float x, y, z;
     float nx, ny, nz;
     float normX, normY, normZ;
@@ -79,52 +78,56 @@ int main() {
         memset(zBuffer, 0, (HEIGHT * WIDTH) * sizeof(float));
         memset(screen, -1, (HEIGHT * WIDTH) * sizeof(float));
 
-        for (betta = 0; betta < 2 * M_PI; betta += STEP) {
-            for (alpha = 0; alpha < 2 * M_PI; alpha += STEP) {
-                // Coords of toroid
-                x = (R + r * cos(alpha));
-                y = 0;
-                z = r * sin(alpha);
-                rotation_z(&x, &y, &z, betta);
-
-                // ROTATION X
-                rotation_x(&x, &y, &z, xRotationAngle);
-
-                // ROTATION Y
-                rotation_y(&x, &y, &z, yRotationAngle);
-
-                // TRANSLATION
-                z += DISTANCE;
-
-                // printf("%d\n", light);
-                // ADD TO Z BUFFER
-                projected_x = x * SCALE * SCREEN_DIST / z + WIDTH / 2;
-                projected_y = y * SCREEN_DIST / z + HEIGHT / 2;
-
-
-                if (z > 0 && projected_x >= 0 && projected_x < WIDTH && projected_y >= 0 && projected_y < HEIGHT) {
-                    if (zBuffer[(int)projected_y][(int)projected_x] == 0 || z < zBuffer[(int)projected_y][(int)projected_x]) {
-                        zBuffer[(int)projected_y][(int)projected_x] = z;
-
-
-                        // APPLY LIGHT
-                        normX = cos(alpha);
-                        normY = 0;
-                        normZ = sin(alpha);
-                        rotation_z(&normX, &normY, &normZ, betta);
+        for (gamma = -R / 2; gamma <= R / 2; gamma += STEP) {
+            for (betta = -R / 2; betta <= R / 2; betta += STEP) {
+                for (alpha = -R / 2; alpha <= R / 2; alpha += STEP) {
+                    if (alpha == R / 2 || alpha == -R / 2 || betta == R / 2 || betta == -R / 2 || gamma == R / 2 || gamma == -R / 2) {
+                        // Coords of toroid
+                        x = alpha;
+                        y = betta;
+                        z = gamma;
+                        rotation_z(&x, &y, &z, betta);
 
                         // ROTATION X
-                        rotation_x(&normX, &normY, &normZ, xRotationAngle);
+                        rotation_x(&x, &y, &z, xRotationAngle);
 
                         // ROTATION Y
-                        rotation_y(&normX, &normY, &normZ, yRotationAngle);
-                        if (normZ < 0) {
-                            light = normX * LIGHT_VECTOR[0] + normY * LIGHT_VECTOR[1] + normZ * LIGHT_VECTOR[2];
-                            screen[(int)projected_y][(int)projected_x] = light > 0 ? light : 0;
+                        rotation_y(&x, &y, &z, yRotationAngle);
+
+                        // TRANSLATION
+                        z += DISTANCE;
+
+                        // printf("%d\n", light);
+                        // ADD TO Z BUFFER
+                        projected_x = x * SCALE * SCREEN_DIST / z + WIDTH / 2;
+                        projected_y = y * SCREEN_DIST / z + HEIGHT / 2;
+
+
+                        if (z > 0 && projected_x >= 0 && projected_x < WIDTH && projected_y >= 0 && projected_y < HEIGHT) {
+                            if (zBuffer[(int)projected_y][(int)projected_x] == 0 || z < zBuffer[(int)projected_y][(int)projected_x]) {
+                                zBuffer[(int)projected_y][(int)projected_x] = z;
+
+
+                                // APPLY LIGHT
+                                normX = cos(alpha);
+                                normY = 0;
+                                normZ = sin(alpha);
+                                rotation_z(&normX, &normY, &normZ, betta);
+
+                                // ROTATION X
+                                rotation_x(&normX, &normY, &normZ, xRotationAngle);
+
+                                // ROTATION Y
+                                rotation_y(&normX, &normY, &normZ, yRotationAngle);
+                                if (normZ < 0) {
+                                    light = normX * LIGHT_VECTOR[0] + normY * LIGHT_VECTOR[1] + normZ * LIGHT_VECTOR[2];
+                                    screen[(int)projected_y][(int)projected_x] = light > 0 ? light : 0;
+                                }
+                            }
                         }
+
                     }
                 }
-
             }
         }
         // CHANGE ANGLE
