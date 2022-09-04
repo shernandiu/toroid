@@ -5,13 +5,14 @@
 
 const size_t WIDTH = 80;
 const size_t HEIGHT = 80;
-const float STEP = 0.1;
-const float R = 30;
+const float STEP = 0.01;
+const float R = 2;
 const float r = 1;
-const float X_AXIS_ROTATION_SPEED;
-const float Y_AXIS_ROTATION_SPEED;
-const float SCREEN_DIST = 3;
+const float X_AXIS_ROTATION_SPEED = 0.06;
+const float Y_AXIS_ROTATION_SPEED = 0.03;
+const float SCREEN_DIST = 50;
 const char* SHADES = ".,-~:;=!*#$@";
+const float DISTANCE = 5;
 
 int main() {
     const int NUMBER_SHADES = strlen(SHADES);
@@ -70,8 +71,8 @@ int main() {
                 light = normX * LIGHT_VECTOR[0] + normY * LIGHT_VECTOR[1] + normZ * LIGHT_VECTOR[2];
                 // printf("%d\n", light);
                 // ADD TO Z BUFFER
-                projected_x = x * SCREEN_DIST / z;
-                projected_y = y * SCREEN_DIST / z;
+                projected_x = x * SCREEN_DIST / (z + DISTANCE) + WIDTH / 2;
+                projected_y = y * SCREEN_DIST / (z + DISTANCE) + HEIGHT / 2;
                 if (projected_x >= 0 && projected_x < WIDTH && projected_y >= 0 && projected_y < HEIGHT)
                     zBuffer[(int)projected_y][(int)projected_x] = light >= 0 ? light : 0;
 
@@ -80,11 +81,11 @@ int main() {
         // CHANGE ANGLE
         xRotationAngle += X_AXIS_ROTATION_SPEED;
         yRotationAngle += Y_AXIS_ROTATION_SPEED;
-        xRotationAngle *= xRotationAngle >= 2 * M_PI ? 2 * M_PI : 0;
-        yRotationAngle *= yRotationAngle >= 2 * M_PI ? 2 * M_PI : 0;
+        xRotationAngle -= xRotationAngle >= 2 * M_PI ? 2 * M_PI : 0;
+        yRotationAngle -= yRotationAngle >= 2 * M_PI ? 2 * M_PI : 0;
 
         printf("\x1b[H");
-        //draw screen
+        // draw screen
         for (size_t i = 0; i < HEIGHT; i++) {
             for (size_t j = 0; j < WIDTH; j++) {
                 light = zBuffer[i][j];
@@ -92,6 +93,13 @@ int main() {
             }
             putchar('\n');
         }
+
+        // for (size_t i = 0; i < HEIGHT; i++) {
+        //     for (size_t j = 0; j < WIDTH; j++) {
+        //         printf("%.2f ", zBuffer[i][j]);
+        //     }
+        //     putchar('\n');
+        // }
 
 
     }
