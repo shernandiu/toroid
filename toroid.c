@@ -3,16 +3,18 @@
 #include <string.h>
 #include <math.h>
 
-const size_t WIDTH = 80;
+const size_t WIDTH = 180;
 const size_t HEIGHT = 80;
 const float STEP = 0.01;
 const float R = 2;
 const float r = 1;
-const float X_AXIS_ROTATION_SPEED = 0.001;
-const float Y_AXIS_ROTATION_SPEED = 0.008;
-const float SCREEN_DIST = 100;
+const float X_AXIS_ROTATION_SPEED = 0.04;
+const float Y_AXIS_ROTATION_SPEED = 0.025;
+const float DISTANCE = 15;
 const char* SHADES = ".,-~:;=!*#$@";
-const float DISTANCE = 10;
+const float FOV = 90;
+
+// text scale = 156*288
 
 const float LIGHT_VECTOR_OG[] = { 0, -1 , -1 };
 
@@ -54,6 +56,10 @@ int main() {
     const int NUMBER_SHADES = strlen(SHADES);
     const float* LIGHT_VECTOR = normalizate_vector(LIGHT_VECTOR_OG);
 
+    const float SCALE = 288.0 / 156.0;
+
+    const float SCREEN_DIST = WIDTH / tan(FOV * M_PI / 180 / 2);
+
 
     float betta, alpha;
     float x, y, z;
@@ -92,7 +98,7 @@ int main() {
 
                 // printf("%d\n", light);
                 // ADD TO Z BUFFER
-                projected_x = x * SCREEN_DIST / z + WIDTH / 2;
+                projected_x = x * SCALE * SCREEN_DIST / z + WIDTH / 2;
                 projected_y = y * SCREEN_DIST / z + HEIGHT / 2;
 
 
@@ -112,7 +118,6 @@ int main() {
 
                         // ROTATION Y
                         rotation_y(&normX, &normY, &normZ, yRotationAngle);
-
                         if (normZ < 0) {
                             light = normX * LIGHT_VECTOR[0] + normY * LIGHT_VECTOR[1] + normZ * LIGHT_VECTOR[2];
                             screen[(int)projected_y][(int)projected_x] = light > 0 ? light : 0;
