@@ -8,7 +8,7 @@ const size_t HEIGHT = 80;
 const float STEP = 0.01;
 const float R = 2;
 const float r = 1;
-const float X_AXIS_ROTATION_SPEED = 0.00;
+const float X_AXIS_ROTATION_SPEED = 0.000;
 const float Y_AXIS_ROTATION_SPEED = 0.005;
 const float SCREEN_DIST = 50;
 const char* SHADES = ".,-~:;=!*#$@";
@@ -40,7 +40,7 @@ void rotation_z(float* x, float* y, float* z, float angle) {
 
 int main() {
     const int NUMBER_SHADES = strlen(SHADES);
-    const float LIGHT_VECTOR[] = { 0, 0, -1 };
+    const float LIGHT_VECTOR[] = { 0, 1 / sqrt(2), -1 / sqrt(2) };
 
 
     float betta, alpha;
@@ -52,21 +52,22 @@ int main() {
     float xRotationAngle = 0, yRotationAngle = 0;
 
     float zBuffer[HEIGHT][WIDTH];
-    char screen[HEIGHT][WIDTH];
+    float screen[HEIGHT][WIDTH];
 
     printf("\x1b[2J");
 
     while (1) {
 
         memset(zBuffer, 0, (HEIGHT * WIDTH) * sizeof(float));
-        memset(screen, ' ', (HEIGHT * WIDTH) * sizeof(char));
+        memset(screen, 0, (HEIGHT * WIDTH) * sizeof(float));
 
         for (betta = 0; betta < 2 * M_PI; betta += STEP) {
             for (alpha = 0; alpha < 2 * M_PI; alpha += STEP) {
                 // Coords of toroid
-                x = (R + r * cos(alpha)) * cos(betta);
-                y = (R + r * cos(alpha)) * sin(betta);
+                x = (R + r * cos(alpha));
+                y = 0;
                 z = r * sin(alpha);
+                rotation_z(&x, &y, &z, betta);
 
                 // ROTATION X
                 rotation_x(&x, &y, &z, xRotationAngle);
@@ -96,9 +97,12 @@ int main() {
                 // ADD TO Z BUFFER
                 projected_x = x * SCREEN_DIST / z + WIDTH / 2;
                 projected_y = y * SCREEN_DIST / z + HEIGHT / 2;
-                if (projected_x >= 0 && projected_x < WIDTH && projected_y >= 0 && projected_y < HEIGHT)
-                    if (zBuffer[(int)projected_y][(int)projected_x] < light)
-                        zBuffer[(int)projected_y][(int)projected_x] = light;
+                if (projected_x >= 0 && projected_x < WIDTH && projected_y >= 0 && projected_y < HEIGHT) {
+                    if (zBuffer[(int)projected_y][(int)projected_x] == 0 || z < zBuffer[(int)projected_y][(int)projected_x]) {
+                        zBuffer[(int)projected_y][(int)projected_x] = z;
+                        screen[(int)projected_y][(int)projected_x] = light;
+                    }
+                }
 
             }
         }
@@ -112,7 +116,7 @@ int main() {
         // draw screen
         for (size_t i = 0; i < HEIGHT; i++) {
             for (size_t j = 0; j < WIDTH; j++) {
-                light = zBuffer[i][j];
+                light = screen[i][j];
                 putchar(light > 0 ? SHADES[(int)(NUMBER_SHADES * light)] : ' ');
             }
             putchar('\n');
