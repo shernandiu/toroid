@@ -118,7 +118,7 @@ int main() {
 
                         // ROTATION Y
                         rotation_y(&normX, &normY, &normZ, yRotationAngle);
-                        if (normZ < 0) {
+                        if (-x * normX - y * normY - z * normZ > 0) {
                             light = normX * LIGHT_VECTOR[0] + normY * LIGHT_VECTOR[1] + normZ * LIGHT_VECTOR[2];
                             screen[(int)projected_y][(int)projected_x] = light > 0 ? light : 0;
                         }
