@@ -21,6 +21,7 @@ int main() {
 
     float betta, alpha;
     float x, y, z;
+    float nx, ny, nz;
     float normX, normY, normZ;
     float light;
     float projected_x, projected_y;
@@ -44,28 +45,32 @@ int main() {
                 z = r * sin(alpha);
 
                 // ROTATION X
-                x = x;
-                y = y * cos(xRotationAngle) - z * sin(xRotationAngle);
-                y = y * sin(xRotationAngle) - z * cos(xRotationAngle);
+                nx = x;
+                ny = y * cos(xRotationAngle) - z * sin(xRotationAngle);
+                nz = y * sin(xRotationAngle) + z * cos(xRotationAngle);
 
                 // ROTATION Y
-                x = x * cos(yRotationAngle) - y * sin(yRotationAngle);
-                y = x * sin(yRotationAngle) - y * cos(yRotationAngle);
-                z = z;
+                x = nx * cos(yRotationAngle) - nz * sin(yRotationAngle);
+                y = ny;
+                z = nx * sin(yRotationAngle) + nz * cos(yRotationAngle);
+
+
 
                 // APPLY LIGHT
                 // norms
-                normX = cos(alpha) * cos(betta) - sin(alpha) * cos(betta);
+                normX = cos(alpha) * cos(betta);
                 normY = 0;
                 normZ = sin(alpha);
 
                 // ROTATION X
-                normY = normY * cos(xRotationAngle) - normZ * sin(xRotationAngle);
-                normZ = normY * sin(xRotationAngle) - normZ * cos(xRotationAngle);
+                nx = normX;
+                ny = normY * cos(xRotationAngle) - normZ * sin(xRotationAngle);
+                nz = normY * sin(xRotationAngle) + normZ * cos(xRotationAngle);
 
                 // ROTATION Y
-                normX = normX * cos(yRotationAngle) - normY * sin(yRotationAngle);
-                normY = normX * sin(yRotationAngle) - normY * cos(yRotationAngle);
+                normX = nz * cos(yRotationAngle) + nz * sin(yRotationAngle);
+                normY = ny;
+                normZ = -nx * sin(yRotationAngle) + nz * cos(yRotationAngle);
 
 
                 light = normX * LIGHT_VECTOR[0] + normY * LIGHT_VECTOR[1] + normZ * LIGHT_VECTOR[2];
