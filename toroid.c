@@ -5,7 +5,7 @@
 
 const size_t WIDTH = 180;
 const size_t HEIGHT = 80;
-const float STEP = 0.01;
+const float STEP = 0.02;
 const float R = 2;
 const float X_AXIS_ROTATION_SPEED = 0.03;
 const float Y_AXIS_ROTATION_SPEED = 0.02;
@@ -15,7 +15,7 @@ const float FOV = 90;
 
 // text scale = 156*288
 
-const float LIGHT_VECTOR_OG[] = { 0, 0, -1 };
+const float LIGHT_VECTOR_OG[] = { 0, -1, -1 };
 
 void rotation_x(float* x, float* y, float* z, float angle);
 void rotation_y(float* x, float* y, float* z, float angle);
@@ -78,10 +78,10 @@ int main() {
         memset(zBuffer, 0, (HEIGHT * WIDTH) * sizeof(float));
         memset(screen, -1, (HEIGHT * WIDTH) * sizeof(float));
 
-        for (gamma = -R / 2; gamma <= R / 2; gamma += STEP) {
-            for (betta = -R / 2; betta <= R / 2; betta += STEP) {
-                for (alpha = -R / 2; alpha <= R / 2; alpha += STEP) {
-                    if (alpha == -R / 2 || R / 2 - alpha <= STEP || betta == -R / 2 || R / 2 - betta <= STEP || gamma == -R / 2 || R / 2 - gamma <= STEP) {
+        for (gamma = -R; gamma <= R; gamma += STEP) {
+            for (betta = -R; betta <= R; betta += STEP) {
+                for (alpha = -R; alpha <= R; alpha += STEP) {
+                    if (alpha == -R || R - alpha <= STEP || betta == -R || R - betta <= STEP || gamma == -R || R - gamma <= STEP) {
                         // Coords of toroid
                         x = alpha;
                         y = betta;
@@ -109,11 +109,11 @@ int main() {
                                 normZ = 0;
 
                                 // APPLY LIGHT
-                                if (alpha == -R / 2 || R / 2 - alpha <= STEP)
+                                if (alpha == -R || R - alpha <= STEP)
                                     normX = alpha > 0 ? 1 : -1;
-                                else if (betta == -R / 2 || R / 2 - betta <= STEP)
+                                else if (betta == -R || R - betta <= STEP)
                                     normY = betta > 0 ? 1 : -1;
-                                else if (gamma == -R / 2 || R / 2 - gamma <= STEP)
+                                else if (gamma == -R || R - gamma <= STEP)
                                     normZ = gamma > 0 ? 1 : -1;
 
                                 // ROTATION X
