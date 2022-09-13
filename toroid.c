@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
+#include <unistd.h>
+#define LIMIT_FPS 24
+#define FRAME_TIME 1000.0/LIMIT_FPS
 
 const size_t WIDTH = 180;
 const size_t HEIGHT = 80;
@@ -13,7 +17,6 @@ const float Y_AXIS_ROTATION_SPEED = 0.025;
 const float DISTANCE = 15;
 const char* SHADES = ".:,!;-~*=#$@";
 const float FOV = 90;
-
 // text scale = 156*288
 
 const float LIGHT_VECTOR_OG[] = { 0, -1 , -1 };
@@ -53,6 +56,7 @@ const float* normalizate_vector(const float* vector) {
 }
 
 int main() {
+
     const int NUMBER_SHADES = strlen(SHADES);
     const float* LIGHT_VECTOR = normalizate_vector(LIGHT_VECTOR_OG);
 
@@ -71,11 +75,14 @@ int main() {
 
     float zBuffer[HEIGHT][WIDTH];
     float screen[HEIGHT][WIDTH];
+    time_t start;
+    struct timespec tstart = { 0,0 }, tend = { 0,0 };
+
 
     printf("\x1b[2J");
 
     while (1) {
-
+        clock_gettime(CLOCK_MONOTONIC, &tstart);
         memset(zBuffer, 0, (HEIGHT * WIDTH) * sizeof(float));
         memset(screen, -1, (HEIGHT * WIDTH) * sizeof(float));
 
@@ -143,13 +150,24 @@ int main() {
             putchar('\n');
         }
 
-        // for (size_t i = 0; i < HEIGHT; i++) {
-        //     for (size_t j = 0; j < WIDTH; j++) {
-        //         printf("%.2f ", zBuffer[i][j]);
-        //     }
-        //     putchar('\n');
-        // }
 
+        clock_gettime(CLOCK_MONOTONIC, &tend);
+        double timeErased = ((double)1.0e3 * tend.tv_sec + 1.0e-6 * tend.tv_nsec) - ((double)1.0e3 * tstart.tv_sec + 1.0e-6 * tstart.tv_nsec);
+        // printf("Erased time: %f\n", timeErased);
+        // printf("Objetive: %f\n", FRAME_TIME);
+        if (timeErased < FRAME_TIME) {
+            struct timespec ts;
+            ts.tv_sec = 0;
+            ts.tv_nsec = (FRAME_TIME - timeErased) * 1.0e6;
+            // printf("Delay: %f\n", ts.tv_nsec / 1.0e6);
+            nanosleep(&ts, NULL);
+        }
+
+        clock_gettime(CLOCK_MONOTONIC, &tend);
+        timeErased = ((double)1.0e3 * tend.tv_sec + 1.0e-6 * tend.tv_nsec) - ((double)1.0e3 * tstart.tv_sec + 1.0e-6 * tstart.tv_nsec);
+
+
+        printf("%f FPS\n", 1000 / timeErased);
 
     }
 
