@@ -35,19 +35,22 @@ void rotation_x(float* x, float* y, float* z, float angle) {
     *y = *y * cos(angle) - *z * sin(angle);
     *z = tempY * sin(angle) + *z * cos(angle);
 }
+
 void rotation_y(float* x, float* y, float* z, float angle) {
     float tempX = *x;
 
     *x = *x * cos(angle) + *z * sin(angle);
     *z = -tempX * sin(angle) + *z * cos(angle);
 }
+
 void rotation_z(float* x, float* y, float* z, float angle) {
     float tempX = *x;
 
     *x = *x * cos(angle) - *y * sin(angle);
     *y = tempX * sin(angle) + *y * cos(angle);
 }
-const float* normalizate_vector(const float* vector) {
+
+const float* normalize_vector(const float* vector) {
     float* output = calloc(3, sizeof(float));
     float mod = vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2];
     mod = 1 / sqrt(mod);
@@ -60,7 +63,7 @@ const float* normalizate_vector(const float* vector) {
 int main() {
 
     const int NUMBER_SHADES = strlen(SHADES);
-    const float* LIGHT_VECTOR = normalizate_vector(LIGHT_VECTOR_OG);
+    const float* LIGHT_VECTOR = normalize_vector(LIGHT_VECTOR_OG);
 
     const float SCALE = 288.0 / 156.0;
 
@@ -163,8 +166,6 @@ int main() {
                         case 3:
                             printf("\x1B[33m");
                             break;
-                        default:
-
                     }
                     putchar(SHADES[(int)roundf((NUMBER_SHADES - 1) * light)]);
                 }
@@ -203,6 +204,12 @@ int main() {
 
 
     }
+
+    /*
+    Did they not teach memory freeing there in that crystal ball known as UEX, or were you too busy brown-nosing the professors or
+    focusing on your bobblehead-figurine-like nodding in class to feign attention?
+        */
+    free((void*)LIGHT_VECTOR);
 
     return EXIT_SUCCESS;
 }
